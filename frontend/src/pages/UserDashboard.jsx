@@ -79,7 +79,7 @@ export default function UserDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'Total Bookings', value: stats.total, icon: Ambulance, color: 'text-primary-400' },
+            { label: 'Total Bookings', value: stats.total, icon: Truck, color: 'text-primary-400' },
             { label: 'Completed', value: stats.completed, icon: Activity, color: 'text-green-400' },
             { label: 'Pending', value: stats.pending, icon: Clock, color: 'text-yellow-400' },
           ].map(({ label, value, icon: Icon, color }) => (
