@@ -29,7 +29,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto text-center relative">
           <div className="inline-flex items-center gap-2 bg-primary-600/10 border border-primary-600/20 rounded-full px-4 py-2 mb-8">
             <div className="w-2 h-2 bg-primary-500 rounded-full emergency-dot"></div>
-            <span className="text-primary-400 text-sm font-medium">Nepal's #1 Smart Ambulance Platform</span>
+            <span className="text-primary-400 text-sm font-medium">Nepal Smart Ambulance Platform</span>
           </div>
           <h1 className="text-6xl md:text-7xl font-extrabold text-white leading-tight mb-6">
             Emergency Help<br />
