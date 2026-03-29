@@ -103,6 +103,30 @@ export default function BookingHistoryPage() {
                   </div>
                 )}
 
+                {/* Pricing Information */}
+                {(b.distance || b.fare) && (
+                  <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-gradient-to-r from-dark-700/50 to-dark-800/50 rounded-xl">
+                    {b.distance > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-500">Distance</p>
+                        <p className="text-white font-semibold">{b.distance} km</p>
+                      </div>
+                    )}
+                    {b.pricePerKm > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-500">Rate</p>
+                        <p className="text-white font-semibold">₹{b.pricePerKm}/km</p>
+                      </div>
+                    )}
+                    {b.fare > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-500">Total Fare</p>
+                        <p className="text-green-400 font-bold">₹{b.fare}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex gap-3">
                   {(b.status === 'accepted' || b.status === 'on_the_way') && (
                     <Link to={`/track?bookingId=${b._id}`} className="btn-primary text-sm px-4 py-2">

@@ -2,17 +2,16 @@ const User = require('../models/User');
 const Driver = require('../models/Driver');
 const Booking = require('../models/Booking');
 
-// @desc Get all users
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({ role: 'user' }).select('-password').sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
+    console.error('getUsers error:', err.message);
     res.status(500).json({ message: err.message });
   }
 };
 
-// @desc Toggle user active status
 exports.toggleUserStatus = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -25,7 +24,6 @@ exports.toggleUserStatus = async (req, res) => {
   }
 };
 
-// @desc Get all drivers
 exports.getDrivers = async (req, res) => {
   try {
     const drivers = await Driver.find().select('-password').sort({ createdAt: -1 });
@@ -35,12 +33,11 @@ exports.getDrivers = async (req, res) => {
   }
 };
 
-// @desc Verify driver
 exports.verifyDriver = async (req, res) => {
   try {
     const driver = await Driver.findByIdAndUpdate(
       req.params.id,
-      { isVerified: true },
+      { isVerified: true, isActive: true },
       { new: true }
     ).select('-password');
     if (!driver) return res.status(404).json({ message: 'Driver not found' });
@@ -50,7 +47,20 @@ exports.verifyDriver = async (req, res) => {
   }
 };
 
-// @desc Toggle driver active status
+exports.rejectDriver = async (req, res) => {
+  try {
+    const driver = await Driver.findByIdAndUpdate(
+      req.params.id,
+      { isVerified: false, isActive: false },
+      { new: true }
+    ).select('-password');
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+    res.json(driver);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.toggleDriverStatus = async (req, res) => {
   try {
     const driver = await Driver.findById(req.params.id);
@@ -63,12 +73,20 @@ exports.toggleDriverStatus = async (req, res) => {
   }
 };
 
-// @desc Get all bookings
+exports.deleteDriver = async (req, res) => {
+  try {
+    await Driver.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Driver deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.getBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
       .populate('userId', 'name phone email')
-      .populate('driverId', 'name phone ambulanceNumber')
+      .populate('driverId', 'name phone ambulanceNumber vehicleType')
       .sort({ createdAt: -1 });
     res.json(bookings);
   } catch (err) {
@@ -76,7 +94,6 @@ exports.getBookings = async (req, res) => {
   }
 };
 
-// @desc Get analytics
 exports.getAnalytics = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments({ role: 'user' });
@@ -87,27 +104,19 @@ exports.getAnalytics = async (req, res) => {
     const cancelledBookings = await Booking.countDocuments({ status: 'cancelled' });
     const availableDrivers = await Driver.countDocuments({ status: 'available' });
     const verifiedDrivers = await Driver.countDocuments({ isVerified: true });
-
-    // Last 7 days bookings
+    const unverifiedDrivers = await Driver.countDocuments({ isVerified: false });
+    const activeBookings = await Booking.countDocuments({ status: { $in: ['accepted', 'on_the_way', 'arrived'] } });
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const recentBookings = await Booking.find({ createdAt: { $gte: sevenDaysAgo } })
-      .select('createdAt status');
-
-    res.json({
-      totalUsers, totalDrivers, totalBookings,
-      completedBookings, pendingBookings, cancelledBookings,
-      availableDrivers, verifiedDrivers, recentBookings,
-    });
+    const recentBookings = await Booking.find({ createdAt: { $gte: sevenDaysAgo } }).select('createdAt status');
+    res.json({ totalUsers, totalDrivers, totalBookings, completedBookings, pendingBookings, cancelledBookings, availableDrivers, verifiedDrivers, unverifiedDrivers, activeBookings, recentBookings });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// @desc Get live driver locations
 exports.getLiveLocations = async (req, res) => {
   try {
-    const drivers = await Driver.find({ status: { $in: ['available', 'busy'] } })
-      .select('name ambulanceNumber status location');
+    const drivers = await Driver.find({ isActive: true }).select('name ambulanceNumber status location vehicleType isVerified');
     res.json(drivers);
   } catch (err) {
     res.status(500).json({ message: err.message });

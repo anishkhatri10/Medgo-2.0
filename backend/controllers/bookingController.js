@@ -1,16 +1,53 @@
 const Booking = require('../models/Booking');
 const Driver = require('../models/Driver');
+const { estimateFare } = require('../utils/pricingUtil');
+
+// @desc Estimate fare for a route
+exports.estimateFare = async (req, res) => {
+  try {
+    const { pickupLocation, destination, emergencyType = 'general' } = req.body;
+
+    if (!pickupLocation?.coordinates || !destination?.coordinates) {
+      return res.status(400).json({ message: 'Valid coordinates required' });
+    }
+
+    const fareEstimate = estimateFare(
+      pickupLocation.coordinates,
+      destination.coordinates,
+      emergencyType
+    );
+
+    res.json(fareEstimate);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // @desc Create booking
 exports.createBooking = async (req, res) => {
   try {
     const { pickupLocation, destination, emergencyType, patientName, patientAge, notes } = req.body;
+
+    // Calculate fare and distance
+    const fareEstimate = estimateFare(
+      pickupLocation.coordinates,
+      destination.coordinates,
+      emergencyType || 'general'
+    );
+
     const booking = await Booking.create({
       userId: req.user._id,
       pickupLocation,
       destination,
       emergencyType: emergencyType || 'general',
-      patientName, patientAge, notes,
+      patientName,
+      patientAge,
+      notes,
+      distance: fareEstimate.distance,
+      fare: fareEstimate.fare,
+      pricePerKm: fareEstimate.pricePerKm,
+      emergencyMultiplier: fareEstimate.emergencyMultiplier,
+      fareBreakdown: fareEstimate.breakdown,
     });
 
     // Notify via socket (attached in server.js)

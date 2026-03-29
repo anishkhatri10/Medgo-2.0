@@ -1,16 +1,26 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Truck, UserPlus } from 'lucide-react';
+import { Truck, UserPlus, Mail, Phone, Lock, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { registerUser, registerDriver } from '../services/api';
 import toast from 'react-hot-toast';
+import { Button, Card, Input, Select, Alert } from '../components/ui';
 
 export default function RegisterPage() {
   const [searchParams] = useSearchParams();
   const isDriver = searchParams.get('type') === 'driver' || window.location.pathname.includes('driver');
   const [role, setRole] = useState(isDriver ? 'driver' : 'user');
-  const [form, setForm] = useState({ name: '', phone: '', email: '', password: '', ambulanceNumber: '', licenseNumber: '', vehicleType: 'basic' });
+  const [form, setForm] = useState({ 
+    name: '', 
+    phone: '', 
+    email: '', 
+    password: '', 
+    ambulanceNumber: '', 
+    licenseNumber: '', 
+    vehicleType: 'basic' 
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -18,6 +28,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
     try {
       const fn = role === 'driver' ? registerDriver : registerUser;
@@ -26,93 +37,166 @@ export default function RegisterPage() {
       toast.success(`Welcome to MedGo, ${data.name}!`);
       navigate(role === 'driver' ? '/driver' : '/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      const errorMsg = err.response?.data?.message || 'Registration failed';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-900 p-4 py-12">
-      <div className="w-full max-w-md animate-slide-up">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-dark-900 to-dark-800 p-4 py-12">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-red-600/5 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-red-600/8 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '0.5s' }}></div>
+      </div>
+
+      <div className="w-full max-w-md animate-scale-in relative">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-600/40">
-              <Truck size={24} className="text-white" />
+          <Link to="/" className="inline-flex items-center justify-center gap-3 mb-8 hover:opacity-90 transition-opacity">
+            <div className="w-14 h-14 bg-gradient-to-br from-red-600 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-red-600/40">
+              <Truck size={28} className="text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">MedGo</span>
+            <span className="text-3xl font-extrabold text-white">MedGo</span>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
           <p className="text-gray-400">Join Nepal's emergency response network</p>
         </div>
 
-        <div className="card">
-          <div className="flex bg-dark-700 rounded-xl p-1 mb-6">
-            {['user', 'driver'].map((r) => (
-              <button key={r} onClick={() => setRole(r)}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${role === r ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white'}`}>
-                {r === 'user' ? 'Patient / User' : 'Ambulance Driver'}
+        <Card gradient className="border-red-600/20">
+          <div className="flex gap-2 mb-8 p-1 bg-dark-900/50 rounded-xl border border-dark-600/30">
+            {[
+              { id: 'user', label: 'Patient', icon: '👤' },
+              { id: 'driver', label: 'Driver', icon: '🚑' }
+            ].map((r) => (
+              <button 
+                key={r.id} 
+                onClick={() => setRole(r.id)}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                  role === r.id 
+                    ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/30' 
+                    : 'text-gray-400 hover:text-white hover:bg-dark-700/50'
+                }`}
+              >
+                <span className="mr-1">{r.icon}</span>{r.label}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="label">Full Name</label>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Ram Sharma" className="input-field" required />
-            </div>
+          {error && (
+            <Alert type="error" title="Registration Error" message={error} onClose={() => setError(null)} className="mb-6" />
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input 
+              label="Full Name"
+              name="name" 
+              value={form.name} 
+              onChange={handleChange} 
+              placeholder="Ram Sharma"
+              required 
+            />
+
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label">Phone</label>
-                <input name="phone" value={form.phone} onChange={handleChange} placeholder="98XXXXXXXX" className="input-field" required />
-              </div>
-              <div>
-                <label className="label">Email</label>
-                <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" className="input-field" required />
-              </div>
+              <Input 
+                label="Phone"
+                name="phone" 
+                value={form.phone} 
+                onChange={handleChange} 
+                placeholder="98XXXXXXXX"
+                icon={Phone}
+                required 
+              />
+              <Input 
+                label="Email"
+                name="email" 
+                type="email" 
+                value={form.email} 
+                onChange={handleChange} 
+                placeholder="you@mail.com"
+                icon={Mail}
+                required 
+              />
             </div>
-            <div>
-              <label className="label">Password</label>
-              <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Min. 8 characters" className="input-field" required minLength={6} />
-            </div>
+
+            <Input 
+              label="Password"
+              name="password" 
+              type="password" 
+              value={form.password} 
+              onChange={handleChange} 
+              placeholder="Min. 8 characters"
+              icon={Lock}
+              required 
+              minLength={6} 
+            />
 
             {role === 'driver' && (
-              <>
-                <div className="border-t border-dark-600/50 pt-4">
-                  <p className="text-xs text-gray-500 mb-4 uppercase tracking-wider font-semibold">Driver Details</p>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="label">Ambulance Number</label>
-                      <input name="ambulanceNumber" value={form.ambulanceNumber} onChange={handleChange} placeholder="BA 1 PA 1234" className="input-field" required />
-                    </div>
-                    <div>
-                      <label className="label">License Number</label>
-                      <input name="licenseNumber" value={form.licenseNumber} onChange={handleChange} placeholder="DL-07-123456" className="input-field" required />
-                    </div>
-                    <div>
-                      <label className="label">Vehicle Type</label>
-                      <select name="vehicleType" value={form.vehicleType} onChange={handleChange} className="input-field">
-                        <option value="basic">Basic Ambulance</option>
-                        <option value="advanced">Advanced Life Support</option>
-                        <option value="icu">Mobile ICU</option>
-                      </select>
-                    </div>
-                  </div>
+              <div className="border-t border-dark-600/50 pt-6">
+                <p className="text-xs text-gray-400 mb-5 uppercase tracking-wider font-semibold flex items-center gap-2">
+                  <Truck size={16} /> Driver Registration Details
+                </p>
+                <div className="space-y-4">
+                  <Input 
+                    label="Ambulance Number"
+                    name="ambulanceNumber" 
+                    value={form.ambulanceNumber} 
+                    onChange={handleChange} 
+                    placeholder="BA 1 PA 1234"
+                    icon={FileText}
+                    required 
+                  />
+
+                  <Input 
+                    label="License Number"
+                    name="licenseNumber" 
+                    value={form.licenseNumber} 
+                    onChange={handleChange} 
+                    placeholder="DL-07-123456"
+                    icon={FileText}
+                    required 
+                  />
+
+                  <Select 
+                    label="Vehicle Type"
+                    name="vehicleType" 
+                    value={form.vehicleType} 
+                    onChange={handleChange}
+                    options={[
+                      { value: 'basic', label: 'Basic Ambulance' },
+                      { value: 'advanced', label: 'Advanced Life Support (ALS)' },
+                      { value: 'icu', label: 'Mobile ICU' }
+                    ]}
+                    required
+                  />
                 </div>
-              </>
+              </div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
-              {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <UserPlus size={18} />}
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              full
+              loading={loading}
+              icon={UserPlus}
+              className="mt-2"
+            >
               {loading ? 'Creating account...' : 'Create Account'}
-            </button>
+            </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-gray-500">
+          <div className="mt-6 pt-6 border-t border-dark-600/30 text-center text-sm text-gray-400">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary-400 hover:text-primary-300 font-medium">Sign in</Link>
+            <Link to="/login" className="text-red-400 hover:text-red-300 font-semibold transition-colors">
+              Sign in
+            </Link>
           </div>
-        </div>
+        </Card>
+
+        <p className="text-center text-xs text-gray-500 mt-6">
+          🔒 Your information is secure and encrypted
+        </p>
       </div>
     </div>
   );

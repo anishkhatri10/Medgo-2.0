@@ -204,6 +204,39 @@ export default function LiveTrackingPage() {
                 </div>
               </div>
 
+              {/* Pricing Details */}
+              {(booking?.distance || booking?.fare) && (
+                <div className="card">
+                  <h3 className="font-bold text-white mb-4">Fare Details</h3>
+                  <div className="space-y-3 text-sm">
+                    {booking?.distance > 0 && (
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Distance</p>
+                        <p className="text-white font-semibold">{booking.distance} km</p>
+                      </div>
+                    )}
+                    {booking?.pricePerKm > 0 && (
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Price/km</p>
+                        <p className="text-white font-semibold">₹{booking.pricePerKm}</p>
+                      </div>
+                    )}
+                    {booking?.emergencyMultiplier > 1 && (
+                      <div className="flex justify-between">
+                        <p className="text-gray-500">Emergency Multiplier</p>
+                        <p className="text-orange-400 font-semibold">x{booking.emergencyMultiplier}</p>
+                      </div>
+                    )}
+                    {booking?.fare > 0 && (
+                      <div className="border-t border-dark-600/50 pt-3 flex justify-between">
+                        <p className="text-gray-400 font-medium">Total Fare</p>
+                        <p className="text-green-400 font-bold text-base">₹{booking.fare}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Cancel */}
               {canCancel && (
                 <button onClick={handleCancel} disabled={cancelling} className="btn-danger w-full">

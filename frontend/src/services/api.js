@@ -33,6 +33,7 @@ export const getMe = () => API.get('/auth/me');
 
 // Bookings
 export const createBooking = (data) => API.post('/bookings', data);
+export const estimateFare = (data) => API.post('/bookings/estimate-fare', data);
 export const getUserBookings = () => API.get('/bookings/user');
 export const getBooking = (id) => API.get(`/bookings/${id}`);
 export const cancelBooking = (id, reason) => API.put(`/bookings/${id}/cancel`, { reason });

@@ -23,6 +23,13 @@ const bookingSchema = new mongoose.Schema({
   estimatedTime: { type: Number, default: 0 }, // in minutes
   distance: { type: Number, default: 0 }, // in km
   fare: { type: Number, default: 0 },
+  pricePerKm: { type: Number, default: 0 }, // Price per km for display
+  emergencyMultiplier: { type: Number, default: 1.0 }, // Multiplier based on emergency type
+  fareBreakdown: {
+    basePrice: { type: Number, default: 0 },
+    distancePrice: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
+  },
   cancelledBy: { type: String, enum: ['user', 'driver', 'admin', ''], default: '' },
   cancelReason: { type: String, default: '' },
   completedAt: { type: Date },
