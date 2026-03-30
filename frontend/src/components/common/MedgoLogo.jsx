@@ -44,7 +44,7 @@ export default function MedgoLogo({ size = 'md', showText = true }) {
           <span className={`font-black bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent ${sizes.text}`}>
             MEDGO
           </span>
-          <span className="text-xs text-gray-500 font-semibold tracking-wider">Emergency Care</span>
+          <span className="text-xs text-gray-500 font-semibold tracking-wider">Every Second Saves a Life.</span>
         </div>
       )}
     </div>

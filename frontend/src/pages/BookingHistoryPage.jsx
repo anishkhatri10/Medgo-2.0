@@ -115,13 +115,13 @@ export default function BookingHistoryPage() {
                     {b.pricePerKm > 0 && (
                       <div>
                         <p className="text-xs text-gray-500">Rate</p>
-                        <p className="text-white font-semibold">₹{b.pricePerKm}/km</p>
+                        <p className="text-white font-semibold">Rs {b.pricePerKm}/km</p>
                       </div>
                     )}
                     {b.fare > 0 && (
                       <div>
                         <p className="text-xs text-gray-500">Total Fare</p>
-                        <p className="text-green-400 font-bold">₹{b.fare}</p>
+                        <p className="text-green-400 font-bold">Rs {b.fare}</p>
                       </div>
                     )}
                   </div>

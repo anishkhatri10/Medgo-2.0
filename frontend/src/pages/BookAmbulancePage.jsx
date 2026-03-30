@@ -299,11 +299,11 @@ export default function BookAmbulancePage() {
                           </div>
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-400">💰 Price per km</span>
-                            <span className="text-white font-semibold">₹{fareEstimate.pricePerKm}</span>
+                            <span className="text-white font-semibold">Rs {fareEstimate.pricePerKm}</span>
                           </div>
                           <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
-                            <span>Base fare: ₹{fareEstimate.breakdown.basePrice}</span>
-                            <span>Distance: ₹{fareEstimate.breakdown.distancePrice}</span>
+                            <span>Base fare: Rs {fareEstimate.breakdown.basePrice}</span>
+                            <span>Distance: Rs {fareEstimate.breakdown.distancePrice}</span>
                           </div>
                         </div>
                         <div className="border-t border-dark-600/50 pt-3 flex justify-between items-center">
@@ -315,7 +315,7 @@ export default function BookAmbulancePage() {
                                 x{fareEstimate.emergencyMultiplier}
                               </div>
                             )}
-                            <span className="text-white font-bold text-lg">₹{fareEstimate.fare}</span>
+                            <span className="text-white font-bold text-lg">Rs {fareEstimate.fare}</span>
                           </div>
                         </div>
                       </>

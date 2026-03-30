@@ -1,6 +1,6 @@
 // Pricing configuration
 const PRICING_CONFIG = {
-  basePrice: 500, // Base fare in NPR (Nepalese Rupee)
+  basePrice: 0, // Base fare in NPR (Nepalese Rupee)
   pricePerKm: 2000, // Price per km in NPR (Nepalese Rupee) - 1 km = 2000 NPR
   emergencyMultiplier: {
     general: 1.0,

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, CheckCircle, XCircle, Shield, ShieldOff, Trash2, Phone, Mail, Car } from 'lucide-react';
 import DashboardLayout from '../components/common/DashboardLayout';
 import StatusBadge from '../components/common/StatusBadge';
-import { getAdminDrivers, verifyDriver, toggleDriverActive,  } from '../services/api';
+import { getAdminDrivers, verifyDriver, rejectDriver, deleteDriver, toggleDriverActive } from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function AdminDriversPage() {
@@ -36,7 +36,7 @@ export default function AdminDriversPage() {
   const handleReject = async (id, name) => {
     if (!window.confirm(`Reject driver ${name}?`)) return;
     try {
-      await rejectDriverAdmin(id);
+      await rejectDriver(id);
       toast.success(`❌ ${name} has been rejected`);
       fetchDrivers();
     } catch { toast.error('Failed to reject driver'); }
@@ -53,7 +53,7 @@ export default function AdminDriversPage() {
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Permanently delete driver ${name}? This cannot be undone.`)) return;
     try {
-      await deleteDriverAdmin(id);
+      await deleteDriver(id);
       toast.success(`${name} deleted`);
       fetchDrivers();
     } catch { toast.error('Failed to delete driver'); }

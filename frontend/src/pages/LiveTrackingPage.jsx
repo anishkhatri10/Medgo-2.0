@@ -218,7 +218,7 @@ export default function LiveTrackingPage() {
                     {booking?.pricePerKm > 0 && (
                       <div className="flex justify-between">
                         <p className="text-gray-500">Price/km</p>
-                        <p className="text-white font-semibold">₹{booking.pricePerKm}</p>
+                        <p className="text-white font-semibold">Rs {booking.pricePerKm}</p>
                       </div>
                     )}
                     {booking?.emergencyMultiplier > 1 && (
@@ -230,7 +230,7 @@ export default function LiveTrackingPage() {
                     {booking?.fare > 0 && (
                       <div className="border-t border-dark-600/50 pt-3 flex justify-between">
                         <p className="text-gray-400 font-medium">Total Fare</p>
-                        <p className="text-green-400 font-bold text-base">₹{booking.fare}</p>
+                        <p className="text-green-400 font-bold text-base">Rs {booking.fare}</p>
                       </div>
                     )}
                   </div>

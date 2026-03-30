@@ -105,6 +105,21 @@ export default function DriverDashboard() {
   return (
     <DashboardLayout>
       <div className="max-w-5xl animate-fade-in">
+        {/* Verification Status */}
+        {!user?.isVerified && (
+          <div className="mb-6 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-yellow-500/20 rounded-xl flex items-center justify-center">
+                <Clock size={18} className="text-yellow-400" />
+              </div>
+              <div>
+                <p className="text-white font-semibold">⏳ Pending Admin Approval</p>
+                <p className="text-yellow-400/70 text-sm">Your account is waiting for admin verification. You cannot accept rides yet.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mb-8 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white mb-1">Driver Dashboard</h1>
@@ -112,13 +127,14 @@ export default function DriverDashboard() {
           </div>
           {/* Online toggle */}
           <div className="flex flex-col items-end gap-2">
-            <button onClick={handleToggleOnline}
+            <button onClick={handleToggleOnline} disabled={!user?.isVerified}
               className={`relative flex items-center gap-3 px-5 py-3 rounded-2xl border font-semibold text-sm transition-all
-                ${online ? 'bg-green-600/20 border-green-600/40 text-green-400' : 'bg-dark-700 border-dark-600 text-gray-400'}`}>
+                ${!user?.isVerified ? 'opacity-50 cursor-not-allowed' :
+                online ? 'bg-green-600/20 border-green-600/40 text-green-400' : 'bg-dark-700 border-dark-600 text-gray-400'}`}>
               <div className={`w-3 h-3 rounded-full ${online ? 'bg-green-500 emergency-dot' : 'bg-gray-600'}`}></div>
               {online ? 'Online' : 'Go Online'}
             </button>
-            <p className="text-xs text-gray-600">{online ? 'Accepting rides' : 'Tap to start'}</p>
+            <p className="text-xs text-gray-600">{!user?.isVerified ? 'Awaiting approval' : online ? 'Accepting rides' : 'Tap to start'}</p>
           </div>
         </div>
 

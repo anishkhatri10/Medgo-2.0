@@ -116,8 +116,26 @@ exports.getAnalytics = async (req, res) => {
 
 exports.getLiveLocations = async (req, res) => {
   try {
-    const drivers = await Driver.find({ isActive: true }).select('name ambulanceNumber status location vehicleType isVerified');
+    const drivers = await Driver.find({ isActive: true }).select('name ambulanceNumber status location vehicleType isVerified rating totalRides');
     res.json(drivers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getDriverTripDetails = async (req, res) => {
+  try {
+    const { driverId } = req.params;
+    const driver = await Driver.findById(driverId).select('name ambulanceNumber status location vehicleType rating totalRides phone email');
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+    
+    // Get current active booking if any
+    const currentBooking = await Booking.findOne({ 
+      driverId, 
+      status: { $in: ['accepted', 'on_the_way', 'arrived'] } 
+    }).populate('userId', 'name phone');
+    
+    res.json({ driver, currentBooking });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
